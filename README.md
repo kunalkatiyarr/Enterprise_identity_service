@@ -1,25 +1,17 @@
-Simple starter app for Spring MVC (using spring boot)
+# Enterprise Identity Service
 
-I could not find any simple barebone starter apps that had a working authentication system, orm, and ready to go. 
+A Spring Boot application that implements a user identity and profile management service.
 
-Every example out there is bloated with a lot of unnecessary code.
-
-To run, just clone it then..
-
-    mvn spring-boot:run   (or run Application.java within eclipse)
-
-
-
-Uses thymeleaf for templating, I find this template engine very easy to use and outputs clean html with error checking.
-H2 or Mysql for DB, configure it via application.properties
-
-
-Features:
-
+## Core Features
 * User Registration
-* User Activation via e-mail link
-* Password Reset via e-mail link
-* User Admin when ROLE_ADMIN
-* Edit Profile
-* Upload Profile Picture
-* Admins can login as other users using "Login As" link in the user editor.
+* Account activation via email link
+* Password reset via email link
+* Role-based access (ROLE_ADMIN, ROLE_USER)
+* Profile management & picture upload
+* Admin impersonation ("Login As")
+
+## Execution
+Run the application locally using the Maven wrapper:
+```bash
+./mvnw.cmd spring-boot:run
+```
