@@ -25,16 +25,19 @@ public class UserService implements UserDetailsService {
 
     private static final int INVALID_ACTIVATION_LENGTH = 5;
 
-    @Autowired
-    private ApplicationConfig config;
+    private final ApplicationConfig config;
 
-    @Autowired
-    private UserRepository repo;
+    private final UserRepository repo;
 
-    @Autowired
-    private HttpSession httpSession;
+    private final HttpSession httpSession;
 
     private static final String CURRENT_USER_KEY = "CURRENT_USER";
+
+    public UserService(final ApplicationConfig config, final UserRepository repo, final HttpSession httpSession) {
+        this.config = config;
+        this.repo = repo;
+        this.httpSession = httpSession;
+    }
 
     @Override
     public UserDetails loadUserByUsername(final String username) {
