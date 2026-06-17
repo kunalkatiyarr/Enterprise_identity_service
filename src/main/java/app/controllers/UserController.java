@@ -1,6 +1,7 @@
 package app.controllers;
 
-import app.models.entity.User;
+import app.models.dto.ApiResponse;
+import app.models.dto.UserResponseDto;
 import app.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -26,12 +27,9 @@ public class UserController {
 
     // 2. Get Single User by ID
     @GetMapping("/{id}")
-    public ResponseEntity<User> getUserById(@PathVariable Long id) {
-        User user = userService.findById(id);
-        if (user != null) {
-            return ResponseEntity.ok(user);
-        }
-        return ResponseEntity.notFound().build();
+    public ResponseEntity<ApiResponse<UserResponseDto>> getUserById(@PathVariable final Long id) {
+        final UserResponseDto user = userService.getUserById(id);
+        return ResponseEntity.ok(ApiResponse.success("User retrieved successfully", user));
     }
 
     // 3. Create / Register New User

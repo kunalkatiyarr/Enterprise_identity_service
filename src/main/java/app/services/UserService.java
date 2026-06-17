@@ -16,7 +16,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.DigestUtils;
 import app.Application;
 import app.configs.ApplicationConfig;
+import app.exceptions.ResourceNotFoundException;
 import app.models.dto.UserDto;
+import app.models.dto.UserResponseDto;
 import app.models.entity.User;
 import app.repositories.UserRepository;
 
@@ -198,5 +200,11 @@ public class UserService implements UserDetailsService {
     public void updateProfilePicture(final User user, final String profilePicture) {
 
         this.repo.updateProfilePicture(user.getUserName(), profilePicture);
+    }
+
+    public UserResponseDto getUserById(final Long id) {
+        final User user = this.repo.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("User not found with id: " + id));
+        return new UserResponseDto(user);
     }
 }
