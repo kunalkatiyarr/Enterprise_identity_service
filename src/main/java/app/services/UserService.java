@@ -14,10 +14,13 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.util.DigestUtils;
+import org.springframework.transaction.annotation.Transactional;
 import app.Application;
 import app.configs.ApplicationConfig;
+import app.exceptions.DuplicateResourceException;
 import app.exceptions.ResourceNotFoundException;
 import app.models.dto.UserDto;
+import app.models.dto.UserRegisterRequest;
 import app.models.dto.UserResponseDto;
 import app.models.entity.User;
 import app.repositories.UserRepository;
@@ -206,5 +209,28 @@ public class UserService implements UserDetailsService {
         final User user = this.repo.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("User not found with id: " + id));
         return new UserResponseDto(user);
+    }
+
+    @Transactional
+    public UserResponseDto createUser(final UserRegisterRequest userDetails) {
+        if (this.repo.findOneByUserName(userDetails.getUserName()) != null) {
+            throw new DuplicateResourceException("Username already exists: " + userDetails.getUserName());
+        }
+        if (this.repo.findOneByEmail(userDetails.getEmail()) != null) {
+            throw new DuplicateResourceException("Email already exists: " + userDetails.getEmail());
+        }
+
+        final User user = userDetails.toEntity();
+        user.setPassword(encodeUserPassword(user.getPassword()));
+        
+        if (user.getRole() == null || user.getRole().isEmpty()) {
+            user.setRole("ROLE_USER");
+        }
+
+        final String activationToken = createActivationToken(user, false);
+        user.setToken(activationToken);
+        
+        final User savedUser = this.repo.save(user);
+        return new UserResponseDto(savedUser);
     }
 }

@@ -1,6 +1,8 @@
 package app.controllers;
 
+import javax.validation.Valid;
 import app.models.dto.ApiResponse;
+import app.models.dto.UserRegisterRequest;
 import app.models.dto.UserResponseDto;
 import app.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,9 +36,9 @@ public class UserController {
 
     // 3. Create / Register New User
     @PostMapping
-    public ResponseEntity<User> createUser(@RequestBody User user) {
-        User savedUser = userService.save(user);
-        return ResponseEntity.ok(savedUser);
+    public ResponseEntity<ApiResponse<UserResponseDto>> createUser(@Valid @RequestBody final UserRegisterRequest userDetails) {
+        final UserResponseDto savedUser = userService.createUser(userDetails);
+        return ResponseEntity.ok(ApiResponse.success("User created successfully", savedUser));
     }
 
     // 4. Update Existing User
