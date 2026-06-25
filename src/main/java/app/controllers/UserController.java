@@ -4,6 +4,7 @@ import javax.validation.Valid;
 import app.models.dto.ApiResponse;
 import app.models.dto.UserRegisterRequest;
 import app.models.dto.UserResponseDto;
+import app.models.dto.UserUpdateRequest;
 import app.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -43,17 +44,9 @@ public class UserController {
 
     // 4. Update Existing User
     @PutMapping("/{id}")
-    public ResponseEntity<User> updateUser(@PathVariable Long id, @RequestBody User userDetails) {
-        User existingUser = userService.findById(id);
-        if (existingUser != null) {
-            // Update fields as per model
-            existingUser.setFirstName(userDetails.getFirstName());
-            existingUser.setLastName(userDetails.getLastName());
-            existingUser.setEmail(userDetails.getEmail());
-            User updatedUser = userService.save(existingUser);
-            return ResponseEntity.ok(updatedUser);
-        }
-        return ResponseEntity.notFound().build();
+    public ResponseEntity<ApiResponse<UserResponseDto>> updateUser(@PathVariable final Long id, @Valid @RequestBody final UserUpdateRequest userDetails) {
+        final UserResponseDto updatedUser = userService.updateUser(id, userDetails);
+        return ResponseEntity.ok(ApiResponse.success("User updated successfully", updatedUser));
     }
 
     // 5. Delete User

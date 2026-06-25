@@ -22,6 +22,7 @@ import app.exceptions.ResourceNotFoundException;
 import app.models.dto.UserDto;
 import app.models.dto.UserRegisterRequest;
 import app.models.dto.UserResponseDto;
+import app.models.dto.UserUpdateRequest;
 import app.models.entity.User;
 import app.repositories.UserRepository;
 
@@ -177,6 +178,26 @@ public class UserService implements UserDetailsService {
                 newData.getLastName(),
                 newData.getAddress(),
                 newData.getCompanyName());
+    }
+
+    @Transactional
+    public UserResponseDto updateUser(final Long id, final UserUpdateRequest userDetails) {
+        final User existingUser = this.repo.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("User not found with id: " + id));
+
+        final User userWithEmail = this.repo.findOneByEmail(userDetails.getEmail());
+        if (userWithEmail != null && !userWithEmail.getId().equals(id)) {
+            throw new DuplicateResourceException("Email address already in use: " + userDetails.getEmail());
+        }
+
+        existingUser.setEmail(userDetails.getEmail());
+        existingUser.setFirstName(userDetails.getFirstName());
+        existingUser.setLastName(userDetails.getLastName());
+        existingUser.setAddress(userDetails.getAddress());
+        existingUser.setCompanyName(userDetails.getCompanyName());
+
+        final User updatedUser = this.repo.save(existingUser);
+        return new UserResponseDto(updatedUser);
     }
 
     public User getLoggedInUser() {
