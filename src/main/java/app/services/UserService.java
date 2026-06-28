@@ -254,4 +254,12 @@ public class UserService implements UserDetailsService {
         final User savedUser = this.repo.save(user);
         return new UserResponseDto(savedUser);
     }
+
+    @Transactional
+    public void deleteUserById(final Long id) {
+        if (!this.repo.existsById(id)) {
+            throw new ResourceNotFoundException("User not found with id: " + id);
+        }
+        this.repo.deleteById(id);
+    }
 }

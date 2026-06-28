@@ -51,8 +51,8 @@ public class UserController {
 
     // 5. Delete User
     @DeleteMapping("/{id}")
-    public ResponseEntity<String> deleteUser(@PathVariable Long id) {
-        userService.deleteById(id);
-        return ResponseEntity.ok("User deleted successfully with ID: " + id);
+    public ResponseEntity<ApiResponse<Void>> deleteUser(@PathVariable final Long id) {
+        userService.deleteUserById(id);
+        return ResponseEntity.ok(ApiResponse.success("User deleted successfully with ID: " + id));
     }
 }
