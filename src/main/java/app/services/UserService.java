@@ -4,6 +4,8 @@ import java.util.List;
 import javax.servlet.http.HttpSession;
 import org.apache.commons.io.Charsets;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.AuthorityUtils;
@@ -261,5 +263,9 @@ public class UserService implements UserDetailsService {
             throw new ResourceNotFoundException("User not found with id: " + id);
         }
         this.repo.deleteById(id);
+    }
+
+    public Page<UserResponseDto> getAllUsers(final Pageable pageable) {
+        return this.repo.findAll(pageable).map(UserResponseDto::new);
     }
 }

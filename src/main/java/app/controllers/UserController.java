@@ -7,6 +7,9 @@ import app.models.dto.UserResponseDto;
 import app.models.dto.UserUpdateRequest;
 import app.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -24,8 +27,10 @@ public class UserController {
 
     // 1. Get All Users (Returns JSON list directly)
     @GetMapping
-    public List<User> getAllUsers() {
-        return userService.findAll();
+    public ResponseEntity<ApiResponse<Page<UserResponseDto>>> getAllUsers(
+            @PageableDefault(size = 10, sort = "userName") final Pageable pageable) {
+        final Page<UserResponseDto> users = userService.getAllUsers(pageable);
+        return ResponseEntity.ok(ApiResponse.success("Users retrieved successfully", users));
     }
 
     // 2. Get Single User by ID
