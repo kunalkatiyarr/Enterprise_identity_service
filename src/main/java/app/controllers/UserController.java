@@ -60,4 +60,14 @@ public class UserController {
         userService.deleteUserById(id);
         return ResponseEntity.ok(ApiResponse.success("User deleted successfully with ID: " + id));
     }
+
+    // 6. Search Users Dynamically
+    @GetMapping("/search")
+    public ResponseEntity<ApiResponse<Page<UserResponseDto>>> searchUsers(
+            @RequestParam(required = false) final String email,
+            @RequestParam(required = false) final String name,
+            @PageableDefault(size = 10, sort = "userName") final Pageable pageable) {
+        final Page<UserResponseDto> users = userService.searchUsers(email, name, pageable);
+        return ResponseEntity.ok(ApiResponse.success("Users matching search criteria retrieved successfully", users));
+    }
 }

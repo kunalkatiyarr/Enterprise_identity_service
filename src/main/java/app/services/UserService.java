@@ -268,4 +268,25 @@ public class UserService implements UserDetailsService {
     public Page<UserResponseDto> getAllUsers(final Pageable pageable) {
         return this.repo.findAll(pageable).map(UserResponseDto::new);
     }
+
+    public Page<UserResponseDto> searchUsers(final String email, final String name, final Pageable pageable) {
+        final org.springframework.data.jpa.domain.Specification<User> spec = (root, query, cb) -> {
+            final java.util.List<javax.persistence.criteria.Predicate> predicates = new java.util.ArrayList<>();
+            
+            if (email != null && !email.trim().isEmpty()) {
+                predicates.add(cb.like(cb.lower(root.get("email")), "%" + email.toLowerCase() + "%"));
+            }
+            
+            if (name != null && !name.trim().isEmpty()) {
+                final javax.persistence.criteria.Predicate nameLike = cb.like(cb.lower(root.get("userName")), "%" + name.toLowerCase() + "%");
+                final javax.persistence.criteria.Predicate firstNameLike = cb.like(cb.lower(root.get("firstName")), "%" + name.toLowerCase() + "%");
+                final javax.persistence.criteria.Predicate lastNameLike = cb.like(cb.lower(root.get("lastName")), "%" + name.toLowerCase() + "%");
+                predicates.add(cb.or(nameLike, firstNameLike, lastNameLike));
+            }
+            
+            return cb.and(predicates.toArray(new javax.persistence.criteria.Predicate[0]));
+        };
+        
+        return this.repo.findAll(spec, pageable).map(UserResponseDto::new);
+    }
 }
