@@ -3,6 +3,8 @@ package app.services;
 import java.util.List;
 import javax.servlet.http.HttpSession;
 import org.apache.commons.io.Charsets;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -30,6 +32,8 @@ import app.repositories.UserRepository;
 
 @Service
 public class UserService implements UserDetailsService {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(UserService.class);
 
     private static final int INVALID_ACTIVATION_LENGTH = 5;
 
@@ -184,6 +188,7 @@ public class UserService implements UserDetailsService {
 
     @Transactional
     public UserResponseDto updateUser(final Long id, final UserUpdateRequest userDetails) {
+        LOGGER.info("Updating user with ID: {}", id);
         final User existingUser = this.repo.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("User not found with id: " + id));
 
@@ -236,6 +241,7 @@ public class UserService implements UserDetailsService {
 
     @Transactional
     public UserResponseDto createUser(final UserRegisterRequest userDetails) {
+        LOGGER.info("Registering new user: {}", userDetails.getUserName());
         if (this.repo.findOneByUserName(userDetails.getUserName()) != null) {
             throw new DuplicateResourceException("Username already exists: " + userDetails.getUserName());
         }
