@@ -235,7 +235,10 @@ public class UserService implements UserDetailsService {
 
     public UserResponseDto getUserById(final Long id) {
         final User user = this.repo.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("User not found with id: " + id));
+                .orElseThrow(() -> {
+                    LOGGER.warn("User lookup failed for ID: {}", id);
+                    return new ResourceNotFoundException("User not found with id: " + id);
+                });
         return new UserResponseDto(user);
     }
 
@@ -265,10 +268,13 @@ public class UserService implements UserDetailsService {
 
     @Transactional
     public void deleteUserById(final Long id) {
+        LOGGER.info("Attempting to delete user with ID: {}", id);
         if (!this.repo.existsById(id)) {
+            LOGGER.warn("Delete failed: User not found with ID: {}", id);
             throw new ResourceNotFoundException("User not found with id: " + id);
         }
         this.repo.deleteById(id);
+        LOGGER.info("User deleted successfully with ID: {}", id);
     }
 
     public Page<UserResponseDto> getAllUsers(final Pageable pageable) {
