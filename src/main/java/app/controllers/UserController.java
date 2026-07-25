@@ -6,18 +6,25 @@ import app.models.dto.UserRegisterRequest;
 import app.models.dto.UserResponseDto;
 import app.models.dto.UserUpdateRequest;
 import app.services.UserService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/api/users")
 public class UserController {
+
+    private static final int DEFAULT_PAGE_SIZE = 10;
 
     private final UserService userService;
 
@@ -28,7 +35,7 @@ public class UserController {
     // 1. Get All Users (Returns JSON list directly)
     @GetMapping
     public ResponseEntity<ApiResponse<Page<UserResponseDto>>> getAllUsers(
-            @PageableDefault(size = 10, sort = "userName") final Pageable pageable) {
+            @PageableDefault(size = DEFAULT_PAGE_SIZE, sort = "userName") final Pageable pageable) {
         final Page<UserResponseDto> users = userService.getAllUsers(pageable);
         return ResponseEntity.ok(ApiResponse.success("Users retrieved successfully", users));
     }
@@ -66,7 +73,7 @@ public class UserController {
     public ResponseEntity<ApiResponse<Page<UserResponseDto>>> searchUsers(
             @RequestParam(required = false) final String email,
             @RequestParam(required = false) final String name,
-            @PageableDefault(size = 10, sort = "userName") final Pageable pageable) {
+            @PageableDefault(size = DEFAULT_PAGE_SIZE, sort = "userName") final Pageable pageable) {
         final Page<UserResponseDto> users = userService.searchUsers(email, name, pageable);
         return ResponseEntity.ok(ApiResponse.success("Users matching search criteria retrieved successfully", users));
     }
