@@ -1,5 +1,7 @@
 package app.controllers;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import javax.validation.Valid;
 import app.models.dto.ApiResponse;
 import app.models.dto.UserRegisterRequest;
@@ -20,6 +22,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+@Tag(name = "User Management", description = "REST APIs for user profile lookup, registration, modification, deletion, and searches")
 @RestController
 @RequestMapping("/api/users")
 public class UserController {
@@ -33,6 +36,7 @@ public class UserController {
     }
 
     // 1. Get All Users (Returns JSON list directly)
+    @Operation(summary = "Get paginated list of all users")
     @GetMapping
     public ResponseEntity<ApiResponse<Page<UserResponseDto>>> getAllUsers(
             @PageableDefault(size = DEFAULT_PAGE_SIZE, sort = "userName") final Pageable pageable) {
@@ -41,6 +45,7 @@ public class UserController {
     }
 
     // 2. Get Single User by ID
+    @Operation(summary = "Get single user by ID")
     @GetMapping("/{id}")
     public ResponseEntity<ApiResponse<UserResponseDto>> getUserById(@PathVariable final Long id) {
         final UserResponseDto user = userService.getUserById(id);
@@ -48,6 +53,7 @@ public class UserController {
     }
 
     // 3. Create / Register New User
+    @Operation(summary = "Register a new user")
     @PostMapping
     public ResponseEntity<ApiResponse<UserResponseDto>> createUser(@Valid @RequestBody final UserRegisterRequest userDetails) {
         final UserResponseDto savedUser = userService.createUser(userDetails);
@@ -55,6 +61,7 @@ public class UserController {
     }
 
     // 4. Update Existing User
+    @Operation(summary = "Update an existing user's details")
     @PutMapping("/{id}")
     public ResponseEntity<ApiResponse<UserResponseDto>> updateUser(@PathVariable final Long id, @Valid @RequestBody final UserUpdateRequest userDetails) {
         final UserResponseDto updatedUser = userService.updateUser(id, userDetails);
@@ -62,6 +69,7 @@ public class UserController {
     }
 
     // 5. Delete User
+    @Operation(summary = "Delete user by ID")
     @DeleteMapping("/{id}")
     public ResponseEntity<ApiResponse<Void>> deleteUser(@PathVariable final Long id) {
         userService.deleteUserById(id);
@@ -69,6 +77,7 @@ public class UserController {
     }
 
     // 6. Search Users Dynamically
+    @Operation(summary = "Search users dynamically with dynamic query filters")
     @GetMapping("/search")
     public ResponseEntity<ApiResponse<Page<UserResponseDto>>> searchUsers(
             @RequestParam(required = false) final String email,
